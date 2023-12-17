@@ -3,27 +3,28 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"gotranspile/proto"
+	"gotranspile/types"
 	"log"
 	"os"
 	"reflect"
+	"strings"
 )
 
 func main() {
-   type Item struct {
-      Type interface{}
-      Value  interface{}
-  }
+   
    if len(os.Args) < 2 {
       log.Fatal("Usage: go run main.go [path_to_json_file]")
       return
   }
   var jsonObj map[string]interface{}
   filePath := os.Args[1]
+  filename := strings.Split(filePath, ".")[0]
   data, err := os.ReadFile(filePath)
   if err != nil {
       log.Fatalf("Error reading file: %s", err)
   }
-   protoStorageTypes := make(map[string]Item)
+   protoStorageTypes := make(map[string]types.Item)
   jsonStr := string(data)
   er2 := json.Unmarshal([]byte(jsonStr), &jsonObj)
   fmt.Print(jsonStr)
@@ -38,11 +39,14 @@ func main() {
         }
     }
     print(value)
-      protoStorageTypes[key] = Item{Value: value, Type: j}
+      protoStorageTypes[key] = types.Item{Value: value, Type: j}
   }
   for d , j := range protoStorageTypes {
     fmt.Println(d ,j.Value, j.Type)
   }
+
+    protostring :=  proto.ConvertJsonTOProto(protoStorageTypes,filename)
+    fmt.Println(protostring)
 }
 func getValueType(variableToCheck interface{}) reflect.Type{
  return reflect.TypeOf(variableToCheck)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gotranspile/proto"
 	"gotranspile/types"
+	"gotranspile/utils"
 	"log"
 	"os"
 	"reflect"
@@ -32,7 +33,7 @@ func main() {
         log.Fatal(err)
     }
     for key, value := range jsonObj {
-      j := getValueType(value)
+      j := utils.GetValueType(value)
       if num, ok := value.(float64); ok {
         if num == float64(int64(num)) {
             j = reflect.TypeOf(int(0))
@@ -47,10 +48,9 @@ func main() {
 
     protostring :=  proto.ConvertJsonTOProto(protoStorageTypes,filename)
     fmt.Println(protostring)
+
+    
 }
-func getValueType(variableToCheck interface{}) reflect.Type{
- return reflect.TypeOf(variableToCheck)
-}
-func print(args interface{}){
-   fmt.Println(args)
-}
+
+
+

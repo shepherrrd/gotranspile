@@ -33,18 +33,43 @@ func main() {
         log.Fatal(err)
     }
     for key, value := range jsonObj {
-      j := utils.GetValueType(value)
-      if num, ok := value.(float64); ok {
-        if num == float64(int64(num)) {
-            j = reflect.TypeOf(int(0))
+        j := utils.GetValueType(value)
+    
+        var item types.Item
+        item.Type = j
+    
+        // Check if value is a slice (i.e., []interface{})
+        if slice, ok := value.([]interface{}); ok {
+            item.HasCHildren = true
+            for _, childValue := range slice {
+                var childItem types.Item
+    
+                // Here you would determine the structure of each child item
+                if childMap, ok := childValue.(map[string]interface{}); ok {
+                    childItem.HasCHildren = false // Assuming child items don't have further nested children
+                    for childKey, childValue := range childMap {
+                        fmt.Print(childKey)
+                        childItemType := utils.GetValueType(childValue)
+                        childItem.Children = append(childItem.Children, types.Item{Value: childValue, Type: childItemType})
+                    }
+                } else {
+                    // If the child is not a map, handle it as a simple field
+                    childItemType := utils.GetValueType(childValue)
+                    childItem = types.Item{Value: childValue, Type: childItemType}
+                }
+    
+                item.Children = append(item.Children, childItem)
+            }
+        } else {
+            // Handle non-slice values as before
+            if num, ok := value.(float64); ok && num == float64(int64(num)) {
+                item.Type = reflect.TypeOf(int(0))
+            }
+            item.Value = value
         }
+    
+        protoStorageTypes[key] = item
     }
-    print(value)
-      protoStorageTypes[key] = types.Item{Value: value, Type: j}
-  }
-  for d , j := range protoStorageTypes {
-    fmt.Println(d ,j.Value, j.Type)
-  }
 
     protostring :=  proto.ConvertJsonTOProto(protoStorageTypes,filename)
     fmt.Println(protostring)

@@ -1,5 +1,17 @@
 {
   "name": "John Doe",
   "age": 10000,
-  "email": "johndoe@example.com"
+  "email": "johndoe@example.com",
+  "items": [
+    {
+      "name": "item1",
+      "price": 100,
+      "tags": ["tag1", "tag2"]
+    },
+    {
+      "name": "item2",
+      "price": 200,
+      "tags": ["tag3", "tag4"]
+    }
+  ]
 }

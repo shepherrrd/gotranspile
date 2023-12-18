@@ -2,6 +2,6 @@
 
 ### USAGE 
 # change directory into src and run go run main.go <'path to json'> 
-#Example
+# Example
 # go run main.go data.json 
 
